@@ -192,10 +192,15 @@ equal-weighted average of the three required metrics (FRS + TAS + PESS).
 
 ### Two evaluation runs included
 
-| Folder | Comparison | Result |
-|--------|-----------|--------|
-| `results/prompt_comparison/` | **Prompt-only** — advanced vs baseline prompt, both on `gpt-5.4-mini` | Effective tie (+0.25%): a strong model writes good emails even from the bare prompt, so the metrics saturate. |
-| `results/model_vs_model/` | **Model + prompt** — advanced @ `gpt-5.4-mini` vs baseline @ `gpt-4o-mini` | Strategy A ahead (+3.21%, wins 9/10): the advanced setup leads clearly, biggest gap on Fact Recall. |
+| Folder | Comparison | What it isolates |
+|--------|-----------|------------------|
+| `results/prompt_comparison/` | **Prompt-only** — advanced vs baseline prompt, both on `gpt-5.4-mini` | Prompt-engineering impact alone (same model). |
+| `results/model_vs_model/` | **Model + prompt** — advanced @ `gpt-5.4-mini` vs baseline @ `gpt-4o-mini` | Combined prompt + model effect (a production A/B). |
+
+Exact scores live in each folder's `analysis_report.md` / `.pdf`. They shift run-to-run
+(LLM-as-Judge variance), and the gap on a strong model is typically small — both prompts
+produce good emails, so the metrics sit near the top of their range. The analysis prose is
+generated **from the data**, so it always reports whichever strategy actually won (or a tie).
 
 Reproduce them:
 
@@ -206,9 +211,6 @@ python run_evaluation.py --output-dir results/prompt_comparison
 # Run 2 — model-vs-model
 MODEL_B=gpt-4o-mini python run_evaluation.py --output-dir results/model_vs_model
 ```
-
-The analysis prose is generated **from the data** — it reports whichever strategy actually
-won (or a tie), so it never overstates the result.
 
 ---
 
@@ -235,7 +237,8 @@ while still assessing nuanced quality.
 ## Dependencies
 
 ```
-groq>=0.11.0          # Groq Cloud SDK (default provider, free tier)
+openai>=1.40.0        # OpenAI SDK (default provider)
+groq>=0.11.0          # Optional: only if PROVIDER=groq (free tier)
 anthropic>=0.30.0     # Optional: only if PROVIDER=anthropic
 python-dotenv>=1.0.0  # .env support
 tabulate>=0.9.0       # Console tables
@@ -243,4 +246,3 @@ fpdf2>=2.7.0          # Pure-Python PDF (final report)
 ```
 
 Python 3.10+ required (uses `str | None` union syntax).
-# Email_Assistant
