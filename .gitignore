@@ -1,0 +1,16 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# OS
+.DS_Store
+
+# Scratch dir for ad-hoc default runs. The curated deliverable runs
+# (results/prompt_comparison, results/model_vs_model) ARE committed.
+results/latest/

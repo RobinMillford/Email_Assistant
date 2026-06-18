@@ -1,0 +1,6 @@
+openai>=1.40.0        # OpenAI SDK (default provider)
+groq>=0.11.0          # Optional: only if PROVIDER=groq (free tier)
+anthropic>=0.30.0     # Optional: only if PROVIDER=anthropic
+python-dotenv>=1.0.0  # .env file support
+tabulate>=0.9.0       # Console table formatting
+fpdf2>=2.7.0          # Pure-Python PDF generation (final report)

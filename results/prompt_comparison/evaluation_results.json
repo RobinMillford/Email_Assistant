@@ -1,0 +1,1777 @@
+{
+  "generated_at": "2026-06-18T16:43:53.132868Z",
+  "metric_definitions": {
+    "FRS": {
+      "name": "Fact Recall Score",
+      "method": "LLM-as-Judge",
+      "formula": "facts_present / total_facts",
+      "range": "0.0 – 1.0",
+      "description": "Measures what fraction of the input key facts are semantically present in the generated email. A score of 1.0 means every fact was captured; 0.0 means none were."
+    },
+    "TAS": {
+      "name": "Tone Alignment Score",
+      "method": "LLM-as-Judge (1–10 rubric, normalised)",
+      "formula": "alignment_score / 10",
+      "range": "0.0 – 1.0",
+      "description": "Rates how precisely the generated email's tone matches the requested tone specification across vocabulary, formality, and emotional register."
+    },
+    "PESS": {
+      "name": "Professional Email Structure Score",
+      "method": "40% rule-based Python + 60% LLM-as-Judge",
+      "formula": "0.4 × rule_score + 0.6 × llm_score",
+      "range": "0.0 – 1.0",
+      "description": "Hybrid metric. Rule layer checks four hard requirements (subject line, greeting, professional closing, multi-paragraph body). LLM layer rates holistic structural quality on a 1–10 scale."
+    },
+    "RAS": {
+      "name": "Reference Alignment Score (supplementary)",
+      "method": "LLM-as-Judge vs human reference email",
+      "formula": "alignment_score / 10",
+      "range": "0.0 – 1.0",
+      "description": "Supplementary metric — the only one that uses the human-written reference email for each scenario. The judge compares the generated email against the reference on coverage, tone-match, and quality, and returns an overall alignment score. Reported separately; NOT folded into the composite (which is the equal-weighted average of FRS+TAS+PESS)."
+    }
+  },
+  "results": {
+    "run_type": "live",
+    "provider": "openai",
+    "model_used": "gpt-5.4-mini",
+    "strategy_a_label": "Strategy A — Advanced prompt · gpt-5.4-mini",
+    "strategy_b_label": "Strategy B — Baseline prompt · gpt-5.4-mini",
+    "scenarios": [
+      {
+        "id": 1,
+        "name": "Job Interview Follow-up",
+        "intent": "Send a thank-you and follow-up email after a job interview",
+        "tone": "Formal, enthusiastic, and professional",
+        "key_facts": [
+          "Interview was for the Senior Data Engineer role at NeuralBridge",
+          "Panel included hiring manager Sarah Chen and tech lead Marcus Rivera",
+          "Interview took place yesterday afternoon",
+          "Candidate discussed experience with Apache Spark and real-time pipelines",
+          "Final hiring decision expected within two weeks"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Thank You for Yesterday’s Interview for the Senior Data Engineer Role\n\nDear Sarah and Marcus,\n\nThank you for taking the time to meet with me yesterday afternoon to discuss the Senior Data Engineer role at NeuralBridge. I sincerely appreciated the opportunity to speak with both of you and learn more about the team’s priorities and the exciting work underway.\n\nI especially enjoyed our conversation about my experience with Apache Spark and real-time pipelines, and how those capabilities may support NeuralBridge’s data engineering goals. The discussion reinforced my enthusiasm for the role and my interest in contributing to a team focused on building scalable, high-impact solutions.\n\nI understand that the final hiring decision is expected within two weeks, and I appreciate the clarity on next steps. Please let me know if I can provide any additional information in the meantime.\n\nThank you again for your time and consideration. I very much enjoyed our conversation and hope to have the opportunity to work with you.\n\nKind regards,  \n[Your Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 5.56,
+          "input_tokens": 1038,
+          "output_tokens": 196,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8,
+              "total_facts": 5,
+              "facts_present": 4,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Interview was for the Senior Data Engineer role at NeuralBridge",
+                  "present": true,
+                  "reason": "The email explicitly says the interview was for the Senior Data Engineer role at NeuralBridge."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Panel included hiring manager Sarah Chen and tech lead Marcus Rivera",
+                  "present": false,
+                  "reason": "The email addresses Sarah and Marcus, but it does not identify them as Sarah Chen and Marcus Rivera or specify their roles."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Interview took place yesterday afternoon",
+                  "present": true,
+                  "reason": "The email states that the meeting took place yesterday afternoon."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Candidate discussed experience with Apache Spark and real-time pipelines",
+                  "present": true,
+                  "reason": "The email mentions discussing experience with Apache Spark and real-time pipelines."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Final hiring decision expected within two weeks",
+                  "present": true,
+                  "reason": "The email says the final hiring decision is expected within two weeks."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Polite, formal, appreciative, and professionally enthusiastic interview follow-up",
+              "positive_examples": "'Thank you for taking the time to meet with me yesterday afternoon'; 'I sincerely appreciated the opportunity'; 'the exciting work underway'; 'The discussion reinforced my enthusiasm for the role'; 'I very much enjoyed our conversation'",
+              "negative_examples": "none"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well-structured with a clear subject line, appropriate greeting, concise multi-paragraph body, and professional closing. It includes a courteous next-step invitation and reads as polished and complete with only minor room for added personalization."
+            },
+            "composite_score": 0.88,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves the core purpose, key details, and professional follow-up intent of the reference, including appreciation, discussion of Apache Spark/real-time pipelines, and mention of the two-week timeline. It is slightly more polished and expansive than the reference, but the tone and business-appropriate style remain very close."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "Subject: Thank You for Yesterday’s Interview\n\nDear Sarah and Marcus,\n\nThank you for taking the time to speak with me yesterday afternoon about the Senior Data Engineer role at NeuralBridge. I appreciated the opportunity to learn more about the team, the position, and the exciting work you are doing.\n\nI enjoyed our discussion about the technical challenges facing the team, and it was great to share my experience with Apache Spark and building real-time data pipelines. Our conversation further strengthened my interest in the role and in the possibility of contributing to NeuralBridge’s continued success.\n\nThank you again for your time and consideration. I understand that a final hiring decision is expected within the next two weeks, and I look forward to hearing from you.\n\nBest regards,  \n[Your Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 3.14,
+          "input_tokens": 104,
+          "output_tokens": 154,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8,
+              "total_facts": 5,
+              "facts_present": 4,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Interview was for the Senior Data Engineer role at NeuralBridge",
+                  "present": true,
+                  "reason": "The email explicitly says it was about the Senior Data Engineer role at NeuralBridge."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Panel included hiring manager Sarah Chen and tech lead Marcus Rivera",
+                  "present": false,
+                  "reason": "The email addresses Sarah and Marcus, but does not identify them as Sarah Chen and Marcus Rivera or specify their roles."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Interview took place yesterday afternoon",
+                  "present": true,
+                  "reason": "The email states, 'Thank you for taking the time to speak with me yesterday afternoon.'"
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Candidate discussed experience with Apache Spark and real-time pipelines",
+                  "present": true,
+                  "reason": "The email mentions sharing experience with Apache Spark and building real-time data pipelines."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Final hiring decision expected within two weeks",
+                  "present": true,
+                  "reason": "The email says a final hiring decision is expected within the next two weeks."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Formal, polished, and professionally appreciative, with a mildly enthusiastic but restrained and courteous tone",
+              "positive_examples": "“Dear Sarah and Marcus,”; “Thank you for taking the time to speak with me yesterday afternoon”; “I appreciated the opportunity to learn more about the team, the position, and the exciting work you are doing”; “I enjoyed our discussion about the technical challenges facing the team”; “it was great to share my experience”; “My interest in the role and in the possibility of contributing to NeuralBridge’s continued success”",
+              "negative_examples": "The enthusiasm is somewhat restrained; phrases like “I look forward to hearing from you” and “Thank you again for your time and consideration” are very professional but not especially energetic"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email has a strong professional structure with a clear subject line, appropriate greeting, well-organized body paragraphs, and a polished closing. It includes a suitable next-step reference and reads as a complete, courteous follow-up message."
+            },
+            "composite_score": 0.88,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email closely matches the reference in purpose, key details, and professional tone, including thanks, enthusiasm for the role, and mention of a two-week timeline. It is slightly more concise and less specific about the conversation around real-time pipelines and final interest, but it would still stand in well as a substitute."
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "name": "Project Delay Notification",
+        "intent": "Inform the client about a delay in project delivery",
+        "tone": "Apologetic, transparent, and professional",
+        "key_facts": [
+          "Project is the 'Phoenix Dashboard' for Vertex Analytics",
+          "Original launch date was this Friday",
+          "A critical API integration bug was discovered during QA testing",
+          "New estimated delivery date is next Thursday",
+          "Daily status updates will be sent from tomorrow",
+          "No additional cost will be charged for the delay"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Update on Phoenix Dashboard Delivery Timeline\n\nDear [Client Name],\n\nI’m reaching out to let you know that the launch of the Phoenix Dashboard for Vertex Analytics, which had originally been scheduled for this Friday, will need to be delayed.\n\nDuring QA testing, our team discovered a critical API integration bug that must be resolved before we can move forward with release. We are treating this with the highest priority, and based on our current assessment, the new estimated delivery date is next Thursday.\n\nTo keep you fully informed throughout the process, we will begin sending daily status updates starting tomorrow. I also want to assure you that no additional cost will be charged for this delay.\n\nWe sincerely apologise for the inconvenience and appreciate your understanding as we work to deliver a stable and reliable final product. Please feel free to reach out if you would like to discuss the issue in more detail.\n\nBest regards,  \n[Your Name]  \n[Your Title]  \n[Company Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 4.76,
+          "input_tokens": 1045,
+          "output_tokens": 194,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 6,
+              "facts_present": 6,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Project is the 'Phoenix Dashboard' for Vertex Analytics",
+                  "present": true,
+                  "reason": "The email explicitly says the launch of the Phoenix Dashboard for Vertex Analytics is being delayed."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Original launch date was this Friday",
+                  "present": true,
+                  "reason": "It states the launch had originally been scheduled for this Friday."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "A critical API integration bug was discovered during QA testing",
+                  "present": true,
+                  "reason": "The email says that during QA testing the team discovered a critical API integration bug."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "New estimated delivery date is next Thursday",
+                  "present": true,
+                  "reason": "It states the new estimated delivery date is next Thursday."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Daily status updates will be sent from tomorrow",
+                  "present": true,
+                  "reason": "The email says daily status updates will begin starting tomorrow."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "No additional cost will be charged for the delay",
+                  "present": true,
+                  "reason": "It clearly says no additional cost will be charged for this delay."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Professional, clear, and apologetic with a transparent status-update style",
+              "positive_examples": "\"I’m reaching out to let you know that the launch ... will need to be delayed\"; \"During QA testing, our team discovered a critical API integration bug\"; \"We are treating this with the highest priority\"; \"To keep you fully informed throughout the process, we will begin sending daily status updates\"; \"We sincerely apologise for the inconvenience\"",
+              "negative_examples": "Minor wording issue: \"we sincerely apologise\" is slightly more formal/UK-spelled than neutral, but not misaligned; otherwise none"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well-organised with a strong subject line, appropriate greeting, clear multi-paragraph body, and professional closing. It includes a clear explanation of the delay and a next step for updates, with only minor room for improvement in personalisation and formatting polish."
+            },
+            "composite_score": 0.9467,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email captures nearly all key points from the reference, including the delay, cause, revised delivery date, daily updates, and no extra cost. It is slightly more polished and generic in phrasing, but the tone, professionalism, and overall intent closely match the original."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "Subject: Update on Phoenix Dashboard Delivery Timeline\n\nDear [Client Name],\n\nI’m writing to inform you of a delay to the delivery of the Phoenix Dashboard for Vertex Analytics.\n\nDuring QA testing, we discovered a critical bug in one of the API integrations that must be resolved before launch to ensure the platform performs reliably and meets our quality standards. As a result, we will need to move the original launch date from this Friday to next Thursday.\n\nWe understand this is an inconvenience, and we sincerely apologize for the delay. Please be assured that no additional cost will be charged for this adjustment.\n\nTo keep you fully informed, we will begin sending daily status updates starting tomorrow so you can track our progress closely.\n\nThank you for your understanding and patience. Please let me know if you would like to discuss this in more detail.\n\nBest regards,  \n[Your Name]  \n[Your Title]  \n[Your Company]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 3.38,
+          "input_tokens": 110,
+          "output_tokens": 183,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 6,
+              "facts_present": 6,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Project is the 'Phoenix Dashboard' for Vertex Analytics",
+                  "present": true,
+                  "reason": "The email explicitly mentions the Phoenix Dashboard for Vertex Analytics in the opening sentence."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Original launch date was this Friday",
+                  "present": true,
+                  "reason": "It states that the original launch date is being moved from this Friday to next Thursday."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "A critical API integration bug was discovered during QA testing",
+                  "present": true,
+                  "reason": "The email says a critical bug in one of the API integrations was discovered during QA testing."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "New estimated delivery date is next Thursday",
+                  "present": true,
+                  "reason": "It explicitly says the launch date will move to next Thursday."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Daily status updates will be sent from tomorrow",
+                  "present": true,
+                  "reason": "The email states that daily status updates will begin starting tomorrow."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "No additional cost will be charged for the delay",
+                  "present": true,
+                  "reason": "It clearly says no additional cost will be charged for this adjustment."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Professional, clear, and reassuring with a sincere apologetic and transparent delivery",
+              "positive_examples": "“I’m writing to inform you of a delay,” “During QA testing, we discovered a critical bug...,” “we sincerely apologize for the delay,” “Please be assured that no additional cost will be charged,” and “we will begin sending daily status updates”",
+              "negative_examples": "Minor phrasing like “Please let me know if you would like to discuss this in more detail” is standard but slightly formal rather than explicitly empathetic; otherwise none"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well-organized with a strong subject line, proper greeting, clear multi-paragraph body, and professional sign-off. It also includes a courteous apology and a clear next step for keeping the client informed, making the structure highly effective."
+            },
+            "composite_score": 0.9467,
+            "reference_alignment": {
+              "score": 0.88,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 8,
+              "quality_score": 9,
+              "comparison_notes": "The generated email captures nearly all key points from the reference, including the delay reason, revised date, no additional cost, and daily updates. It is slightly less specific and reassuring than the reference, with a somewhat more generic closing and less emphasis on the decision to avoid delivering a compromised product."
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "name": "Partnership Cold Outreach",
+        "intent": "Reach out to a potential business partner for a strategic collaboration",
+        "tone": "Confident, concise, and persuasive",
+        "key_facts": [
+          "Target company is GreenLoop Energy, a leader in sustainable logistics",
+          "Proposing a co-branded carbon-offset tracking platform",
+          "Sender's company is DataGreen Tech, specialising in ESG analytics",
+          "Identified GreenLoop's VP of Partnerships, James Holloway, as the recipient",
+          "Requesting a 20-minute exploratory call in the next two weeks"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Exploring a Co-Branded Carbon-Offset Tracking Partnership\n\nDear Mr. Holloway,\n\nI’m reaching out on behalf of DataGreen Tech, where we specialise in ESG analytics, to introduce a collaboration opportunity I believe could be of real strategic value to GreenLoop Energy, a recognised leader in sustainable logistics.\n\nWe have been developing a co-branded carbon-offset tracking platform designed to help organisations clearly measure, communicate, and strengthen the impact of their sustainability efforts. Given GreenLoop’s market position and commitment to sustainability, I believe there is a strong fit for a partnership that could enhance visibility for both brands while delivering practical value to your customers.\n\nIf this is of interest, I would welcome the opportunity to schedule a 20-minute exploratory call with you in the next two weeks to discuss the concept and assess whether it aligns with GreenLoop’s priorities.\n\nThank you for your time and consideration. I look forward to the possibility of speaking with you.\n\nBest regards,\n[Your Name]\n[Your Title]\nDataGreen Tech",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 3.77,
+          "input_tokens": 1057,
+          "output_tokens": 205,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8,
+              "total_facts": 5,
+              "facts_present": 4,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Target company is GreenLoop Energy, a leader in sustainable logistics",
+                  "present": true,
+                  "reason": "The email directly addresses GreenLoop Energy and describes it as a recognized leader in sustainable logistics."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Proposing a co-branded carbon-offset tracking platform",
+                  "present": true,
+                  "reason": "It explicitly states they have been developing a co-branded carbon-offset tracking platform."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Sender's company is DataGreen Tech, specialising in ESG analytics",
+                  "present": true,
+                  "reason": "The sender introduces DataGreen Tech and says it specializes in ESG analytics."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Identified GreenLoop's VP of Partnerships, James Holloway, as the recipient",
+                  "present": false,
+                  "reason": "The email is addressed to Mr. Holloway but does not mention his role as VP of Partnerships."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Requesting a 20-minute exploratory call in the next two weeks",
+                  "present": true,
+                  "reason": "It asks to schedule a 20-minute exploratory call within the next two weeks."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.7,
+              "raw_score": 7,
+              "observed_tone": "Professional, polite, and moderately persuasive, with a somewhat formal and slightly verbose business-development style",
+              "positive_examples": "\"I’m reaching out... to introduce a collaboration opportunity I believe could be of real strategic value\"; \"there is a strong fit for a partnership\"; \"I would welcome the opportunity to schedule a 20-minute exploratory call\"",
+              "negative_examples": "\"I believe could be of real strategic value\" is somewhat cautious rather than fully confident; \"Thank you for your time and consideration\" and \"I look forward to the possibility\" soften the persuasive edge; the email is a bit long-winded for a concise tone"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well-structured with a clear subject line, appropriate greeting, organized body paragraphs, and a professional closing. It includes a clear call-to-action and reads as polished and complete, with only minor room for increased brevity or sharper tailoring."
+            },
+            "composite_score": 0.8133,
+            "reference_alignment": {
+              "score": 0.8,
+              "raw_score": 8,
+              "coverage_score": 8,
+              "tone_match_score": 7,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves the core partnership pitch, ESG analytics positioning, carbon-offset platform concept, and request for a 20-minute call, so it covers most of the reference’s intent. It is slightly more formal and promotional than the reference, and it omits the more direct, concise framing and specific emphasis on auditable real-time emissions data."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "**Subject:** Exploring a Strategic Collaboration Between DataGreen Tech and GreenLoop Energy\n\nDear Mr. Holloway,\n\nI hope you’re well. I’m reaching out from DataGreen Tech, where we specialize in ESG analytics, to explore a potential strategic collaboration with GreenLoop Energy.\n\nWe’ve long admired GreenLoop’s leadership in sustainable logistics, and we see a compelling opportunity to partner on a co-branded carbon-offset tracking platform. This could create meaningful value for your customers by providing greater transparency, measurable impact, and a more seamless sustainability reporting experience.\n\nI’d welcome the chance to discuss this further and see whether there may be a fit. Would you be available for a 20-minute exploratory call sometime in the next two weeks?\n\nIf helpful, I’m happy to work around your schedule.\n\nBest regards,  \n[Your Name]  \n[Your Title]  \nDataGreen Tech  \n[Your Contact Information]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 3.9,
+          "input_tokens": 123,
+          "output_tokens": 183,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8,
+              "total_facts": 5,
+              "facts_present": 4,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Target company is GreenLoop Energy, a leader in sustainable logistics",
+                  "present": true,
+                  "reason": "The email addresses GreenLoop Energy directly and describes it as having leadership in sustainable logistics."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Proposing a co-branded carbon-offset tracking platform",
+                  "present": true,
+                  "reason": "It explicitly proposes a co-branded carbon-offset tracking platform."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Sender's company is DataGreen Tech, specialising in ESG analytics",
+                  "present": true,
+                  "reason": "The sender states they are from DataGreen Tech and that the company specializes in ESG analytics."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Identified GreenLoop's VP of Partnerships, James Holloway, as the recipient",
+                  "present": false,
+                  "reason": "The email salutes 'Mr. Holloway' but does not identify him as James Holloway or as VP of Partnerships."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Requesting a 20-minute exploratory call in the next two weeks",
+                  "present": true,
+                  "reason": "It asks for a 20-minute exploratory call sometime in the next two weeks."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.7,
+              "raw_score": 7,
+              "observed_tone": "Professional and polite, with a moderately persuasive business-development tone; slightly verbose and deferential in places",
+              "positive_examples": "\"we see a compelling opportunity to partner on a co-branded carbon-offset tracking platform\"; \"This could create meaningful value for your customers\"; \"Would you be available for a 20-minute exploratory call sometime in the next two weeks?\"",
+              "negative_examples": "\"I hope you’re well.\"; \"I’d welcome the chance to discuss this further and see whether there may be a fit.\"; \"If helpful, I’m happy to work around your schedule.\""
+            },
+            "structure_quality": {
+              "score": 0.78,
+              "rule_score": 0.75,
+              "llm_score": 0.8,
+              "rule_checks": {
+                "has_subject_line": false,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 8,
+              "structure_observations": "The email includes all essential professional components: a clear subject line, appropriate greeting, concise multi-paragraph body, explicit call to action, and a professional closing. The structure is polished and easy to read, with only minor room for improvement in brevity and tighter formatting."
+            },
+            "composite_score": 0.76,
+            "reference_alignment": {
+              "score": 0.82,
+              "raw_score": 8,
+              "coverage_score": 8,
+              "tone_match_score": 8,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves the core intent: introducing DataGreen, praising GreenLoop, proposing a co-branded carbon-offset tracking platform, and requesting a 20-minute call. It is slightly more polished and generic than the reference, but it closely matches the professional, partnership-oriented tone and overall business purpose."
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "name": "Meeting Reschedule Request",
+        "intent": "Request to reschedule an upcoming team meeting",
+        "tone": "Casual, friendly, and considerate",
+        "key_facts": [
+          "Meeting was scheduled for Tuesday at 3 PM",
+          "Sender has a conflicting external client call that cannot be moved",
+          "Proposing Wednesday at 2 PM or Thursday at 11 AM as alternatives",
+          "The original agenda — sprint retrospective review — will remain unchanged",
+          "Recipient is the direct manager, Priya Nair"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Request to Reschedule Tuesday’s Team Meeting\n\nHi Priya,\n\nI’m reaching out to see if we might be able to move our team meeting that’s currently set for Tuesday at 3:00 PM. I have a conflicting external client call that I’m not able to shift, and I want to make sure I’m fully present for both conversations.\n\nIf it works for you, I’d be happy to reschedule to either Wednesday at 2:00 PM or Thursday at 11:00 AM. The sprint retrospective review can stay exactly as planned, so we wouldn’t need to adjust the agenda at all.\n\nThanks so much for understanding, and let me know what might work best for you.\n\nBest,  \n[Your Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 3.28,
+          "input_tokens": 1046,
+          "output_tokens": 153,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8,
+              "total_facts": 5,
+              "facts_present": 4,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Meeting was scheduled for Tuesday at 3 PM",
+                  "present": true,
+                  "reason": "The email explicitly says the team meeting is currently set for Tuesday at 3:00 PM."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Sender has a conflicting external client call that cannot be moved",
+                  "present": true,
+                  "reason": "It states that the sender has a conflicting external client call that they are not able to shift."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Proposing Wednesday at 2 PM or Thursday at 11 AM as alternatives",
+                  "present": true,
+                  "reason": "The email առաջարկs rescheduling to either Wednesday at 2:00 PM or Thursday at 11:00 AM."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "The original agenda — sprint retrospective review — will remain unchanged",
+                  "present": true,
+                  "reason": "It says the sprint retrospective review can stay exactly as planned and the agenda would not need adjustment."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Recipient is the direct manager, Priya Nair",
+                  "present": false,
+                  "reason": "The email addresses Priya but does not indicate that she is the sender's direct manager or give her full name as Priya Nair."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.7,
+              "raw_score": 7,
+              "observed_tone": "Polite, professional, and considerate, with a somewhat formal business tone",
+              "positive_examples": "“Hi Priya,”; “I’m reaching out to see if we might be able to move our team meeting”; “I’d be happy to reschedule”; “Thanks so much for understanding”",
+              "negative_examples": "“The sprint retrospective review can stay exactly as planned” sounds a bit formal/structured rather than casual; “Best,” and the overall phrasing read more professional than especially friendly"
+            },
+            "structure_quality": {
+              "score": 0.84,
+              "rule_score": 0.75,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": false,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email has a strong professional structure with a clear subject line, appropriate greeting, concise multi-paragraph body, and a polite closing. It also includes a specific call-to-action and helpful scheduling alternatives, making it well-organized and complete."
+            },
+            "composite_score": 0.78,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 8,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves the key request, conflict, suggested alternative times, and promise to keep the agenda unchanged, so it matches the reference closely. It is slightly more formal and less warm/apologetic than the original, but the overall professionalism and clarity are strong."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "Subject: Request to Reschedule Tuesday’s Team Meeting\n\nHi Priya,\n\nI hope you’re doing well. I’m reaching out to ask if we can reschedule our team meeting that’s currently set for Tuesday at 3:00 PM. I have a conflicting external client call at that time that I’m unable to move.\n\nWould either Wednesday at 2:00 PM or Thursday at 11:00 AM work instead? The agenda can stay the same, and we can still cover the sprint retrospective review as planned.\n\nSorry for the inconvenience, and I appreciate your flexibility. Please let me know what works best for you.\n\nBest,  \n[Your Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 3.07,
+          "input_tokens": 112,
+          "output_tokens": 136,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8,
+              "total_facts": 5,
+              "facts_present": 4,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Meeting was scheduled for Tuesday at 3 PM",
+                  "present": true,
+                  "reason": "The email explicitly says the team meeting is currently set for Tuesday at 3:00 PM."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Sender has a conflicting external client call that cannot be moved",
+                  "present": true,
+                  "reason": "It states there is a conflicting external client call at that time that the sender is unable to move."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Proposing Wednesday at 2 PM or Thursday at 11 AM as alternatives",
+                  "present": true,
+                  "reason": "The email առաջարկs Wednesday at 2:00 PM or Thursday at 11:00 AM as rescheduling options."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "The original agenda — sprint retrospective review — will remain unchanged",
+                  "present": true,
+                  "reason": "It says the agenda can stay the same and they can still cover the sprint retrospective review as planned."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Recipient is the direct manager, Priya Nair",
+                  "present": false,
+                  "reason": "The email addresses Priya but does not identify her as Priya Nair or as the sender’s direct manager."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.7,
+              "raw_score": 7,
+              "observed_tone": "Polite and considerate, with a professional and slightly formal workplace tone; friendly but not especially casual",
+              "positive_examples": "\"I hope you’re doing well,\" \"Would either Wednesday at 2:00 PM or Thursday at 11:00 AM work instead?\" \"Sorry for the inconvenience, and I appreciate your flexibility.\"",
+              "negative_examples": "\"I’m reaching out to ask if we can reschedule\" and \"I have a conflicting external client call\" feel more formal than casual; \"Best,\" is also somewhat formal for a casual note"
+            },
+            "structure_quality": {
+              "score": 0.84,
+              "rule_score": 0.75,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": false,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well organized with a strong subject line, appropriate greeting, concise multi-paragraph body, and a professional closing. It includes a clear reason for the request, alternative meeting options, and a direct call to action, making it structurally complete and polished."
+            },
+            "composite_score": 0.78,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email captures the same core request, conflict, and alternative time slots, and it preserves a polite, professional tone. It is slightly more generic and less warm/personal than the reference, with less emphasis on the retrospective being unchanged and the informal friendliness of the original."
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "name": "Customer Complaint Resolution",
+        "intent": "Respond to a customer complaint about a delayed shipment",
+        "tone": "Empathetic, sincere, and solution-focused",
+        "key_facts": [
+          "Customer is Amara Osei, order number TRK-8821",
+          "Order was delayed by 6 days due to a regional carrier disruption",
+          "The package was delivered this morning",
+          "Offering a 20% discount on the customer's next order as goodwill",
+          "Customer support line is open 9 AM – 6 PM Monday to Friday"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Update on Your Order TRK-8821 and Our Apologies for the Delay\n\nDear Amara,\n\nThank you for reaching out, and I sincerely apologise for the delay with your order TRK-8821. We understand how frustrating it is when a shipment does not arrive as expected, and I’m truly sorry for the inconvenience this caused.\n\nThe delay was the result of a regional carrier disruption, which impacted transit times by six days. I’m pleased to confirm that your package was delivered this morning, and I hope it reaches you in good order.\n\nAs a gesture of goodwill, we’d like to offer you a 20% discount on your next order. We value your business and hope this helps show how much we appreciate your patience and understanding.\n\nIf you have any questions or would like assistance with anything further, our customer support line is available from 9:00 AM to 6:00 PM, Monday through Friday. Please don’t hesitate to contact us — we’re here to help.\n\nWarm regards,  \n[Your Name]  \n[Your Title]  \n[Company Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 5.52,
+          "input_tokens": 1055,
+          "output_tokens": 224,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8,
+              "total_facts": 5,
+              "facts_present": 4,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Customer is Amara Osei, order number TRK-8821",
+                  "present": false,
+                  "reason": "The email addresses the customer as Amara and includes order number TRK-8821, but it does not state the full name Amara Osei."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Order was delayed by 6 days due to a regional carrier disruption",
+                  "present": true,
+                  "reason": "The email explicitly says the delay was caused by a regional carrier disruption and impacted transit times by six days."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "The package was delivered this morning",
+                  "present": true,
+                  "reason": "The email states that the package was delivered this morning."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Offering a 20% discount on the customer's next order as goodwill",
+                  "present": true,
+                  "reason": "The email clearly offers a 20% discount on the next order as a gesture of goodwill."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Customer support line is open 9 AM – 6 PM Monday to Friday",
+                  "present": true,
+                  "reason": "The email says the customer support line is available from 9:00 AM to 6:00 PM, Monday through Friday."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Warm, apologetic customer-service tone that is empathetic and mostly solution-focused, with a polished and professional style",
+              "positive_examples": "\"I sincerely apologise for the delay\"; \"We understand how frustrating it is when a shipment does not arrive as expected\"; \"I’m truly sorry for the inconvenience\"; \"I’m pleased to confirm that your package was delivered this morning\"; \"As a gesture of goodwill, we’d like to offer you a 20% discount on your next order\"; \"Please don’t hesitate to contact us — we’re here to help\"",
+              "negative_examples": "none"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well-organized with a strong subject line, appropriate greeting, clear multi-paragraph body, and professional closing. It also includes an apology, explanation, resolution update, goodwill offer, and support option, making the structure complete and effective."
+            },
+            "composite_score": 0.88,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves the core apology, explanation for the delay, confirmation of delivery, discount offer, and support hours, matching the reference very closely. It is slightly more verbose and adds a few extra details (e.g., six-day transit impact, “hope it reaches you in good order,” and fuller closing signature), but the tone and professionalism are highly consistent."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "Subject: Update on Your Order TRK-8821\n\nDear Ms. Osei,\n\nThank you for reaching out, and I sincerely apologize for the delay with your shipment for order TRK-8821. I understand how frustrating this must have been.\n\nYour order was delayed by 6 days due to a regional carrier disruption, but I’m happy to let you know that the package was delivered this morning.\n\nAs a gesture of goodwill and appreciation for your patience, we’d like to offer you a 20% discount on your next order. Please let us know if you would like any help applying this offer.\n\nIf you have any further questions or concerns, our customer support team is available Monday through Friday from 9:00 AM to 6:00 PM.\n\nThank you for your understanding and patience. We value your business and hope to have the opportunity to serve you again under better circumstances.\n\nSincerely,  \n[Your Name]  \n[Your Title/Team]  \n[Company Name]  \n[Contact Information]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 4.6,
+          "input_tokens": 121,
+          "output_tokens": 208,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 5,
+              "facts_present": 5,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Customer is Amara Osei, order number TRK-8821",
+                  "present": true,
+                  "reason": "The email addresses 'Ms. Osei' and explicitly references order TRK-8821, matching the key identifiers."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Order was delayed by 6 days due to a regional carrier disruption",
+                  "present": true,
+                  "reason": "It states that the order was delayed by 6 days because of a regional carrier disruption."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "The package was delivered this morning",
+                  "present": true,
+                  "reason": "The email says the package was delivered this morning."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Offering a 20% discount on the customer's next order as goodwill",
+                  "present": true,
+                  "reason": "It explicitly offers a 20% discount on the next order as a goodwill gesture."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Customer support line is open 9 AM – 6 PM Monday to Friday",
+                  "present": true,
+                  "reason": "The email states customer support is available Monday through Friday from 9:00 AM to 6:00 PM."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Professional, apologetic, and service-oriented with a clear customer-care focus",
+              "positive_examples": "\"I sincerely apologize for the delay\"; \"I understand how frustrating this must have been\"; \"I’m happy to let you know that the package was delivered this morning\"; \"As a gesture of goodwill and appreciation for your patience, we’d like to offer you a 20% discount on your next order\"",
+              "negative_examples": "none"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well-organized with a clear subject line, appropriate salutation, concise multi-paragraph body, and a professional closing. It also includes a relevant next step and a courteous tone, with only minor room for improvement in making the call-to-action slightly more explicit."
+            },
+            "composite_score": 0.9467,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves the core message: apology, explanation of the carrier disruption, confirmation of delivery, and the 20% discount offer. It is slightly less warm and reassuring than the reference and adds a few extra lines and placeholders, but overall it is highly aligned in both content and professional tone."
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "name": "Business Proposal Submission",
+        "intent": "Submit a formal business proposal for a software development contract",
+        "tone": "Formal and confident",
+        "key_facts": [
+          "Proposal is for a custom inventory management system for Orion Retail Group",
+          "Sender's firm is Apex Dev Solutions",
+          "Project estimated at £85,000 with a 14-week delivery timeline",
+          "The attached proposal PDF contains technical specifications and phased milestones",
+          "Post-launch includes 6 months of complimentary technical support",
+          "Request for a formal review meeting within the next 10 business days"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Formal Proposal Submission — Custom Inventory Management System for Orion Retail Group\n\nDear [Recipient Name],\n\nOn behalf of Apex Dev Solutions, I am pleased to submit our formal proposal for the development of a custom inventory management system for Orion Retail Group.\n\nFollowing our review of your requirements, we have prepared a solution designed to support your operational needs, improve visibility across inventory workflows, and provide a scalable foundation for future growth. The project is estimated at £85,000, with a delivery timeline of 14 weeks from commencement.\n\nPlease find the attached proposal PDF, which includes the technical specifications and phased milestones for the engagement. We have also outlined post-launch support, including 6 months of complimentary technical assistance to ensure a smooth transition and continued stability after deployment.\n\nWe would welcome the opportunity to discuss the proposal in more detail and would appreciate the chance to arrange a formal review meeting within the next 10 business days. Please let us know a convenient time, and we will be pleased to coordinate accordingly.\n\nThank you for your consideration. We look forward to the possibility of partnering with Orion Retail Group on this project.\n\nYours sincerely,  \n[Your Name]  \n[Your Title]  \nApex Dev Solutions",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 3.8,
+          "input_tokens": 1057,
+          "output_tokens": 242,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 6,
+              "facts_present": 6,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Proposal is for a custom inventory management system for Orion Retail Group",
+                  "present": true,
+                  "reason": "The email explicitly states it is a formal proposal for the development of a custom inventory management system for Orion Retail Group."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Sender's firm is Apex Dev Solutions",
+                  "present": true,
+                  "reason": "The email says the proposal is submitted on behalf of Apex Dev Solutions and is signed by that firm."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Project estimated at £85,000 with a 14-week delivery timeline",
+                  "present": true,
+                  "reason": "It clearly mentions the project is estimated at £85,000 with a delivery timeline of 14 weeks from commencement."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "The attached proposal PDF contains technical specifications and phased milestones",
+                  "present": true,
+                  "reason": "The email states that the attached proposal PDF includes the technical specifications and phased milestones for the engagement."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Post-launch includes 6 months of complimentary technical support",
+                  "present": true,
+                  "reason": "It explicitly mentions 6 months of complimentary technical assistance after deployment."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "Request for a formal review meeting within the next 10 business days",
+                  "present": true,
+                  "reason": "The email asks to arrange a formal review meeting within the next 10 business days."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Professional, polished, and largely formal with a moderately confident sales/proposal style",
+              "positive_examples": "\"On behalf of Apex Dev Solutions, I am pleased to submit our formal proposal\"; \"we have prepared a solution designed to support your operational needs\"; \"The project is estimated at £85,000, with a delivery timeline of 14 weeks\"; \"We would welcome the opportunity to discuss the proposal in more detail\"; \"Yours sincerely\"",
+              "negative_examples": "none"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well-organised with a clear subject line, appropriate greeting, concise multi-paragraph body, and a professional closing. It includes a strong call-to-action and all major structural components expected in a formal business proposal email."
+            },
+            "composite_score": 0.9467,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves the core proposal details, pricing, timeline, attachment mention, support offer, and request for a review meeting, closely matching the reference’s intent. It is slightly more polished and expanded in a few places, but the tone, formality, and business purpose are highly aligned."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "**Subject:** Formal Proposal Submission – Custom Inventory Management System for Orion Retail Group\n\nDear [Recipient Name],\n\nI hope you are well.\n\nOn behalf of **Apex Dev Solutions**, I am pleased to submit our formal business proposal for the development of a **custom inventory management system** for **Orion Retail Group**.\n\nOur proposal outlines a project valued at **£85,000**, with an estimated delivery timeline of **14 weeks**. The attached PDF includes the full technical specifications, phased milestone plan, and implementation approach designed to support a smooth and efficient delivery.\n\nIn addition, our proposal includes **6 months of complimentary technical support following launch** to ensure a successful transition and continued operational stability.\n\nWe would welcome the opportunity to review the proposal with you in a formal meeting within the **next 10 business days** at your convenience. Please let us know your availability, and we will be happy to arrange a discussion.\n\nThank you for your consideration. We look forward to the opportunity to work with Orion Retail Group.\n\nKind regards,  \n[Your Full Name]  \n[Your Job Title]  \n**Apex Dev Solutions**  \n[Your Contact Information]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 4.2,
+          "input_tokens": 122,
+          "output_tokens": 234,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 6,
+              "facts_present": 6,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Proposal is for a custom inventory management system for Orion Retail Group",
+                  "present": true,
+                  "reason": "The email explicitly states it is a formal business proposal for a custom inventory management system for Orion Retail Group."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Sender's firm is Apex Dev Solutions",
+                  "present": true,
+                  "reason": "The email says it is submitted on behalf of Apex Dev Solutions and signs off with that company name."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Project estimated at £85,000 with a 14-week delivery timeline",
+                  "present": true,
+                  "reason": "The proposal is described as valued at £85,000 with an estimated delivery timeline of 14 weeks."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "The attached proposal PDF contains technical specifications and phased milestones",
+                  "present": true,
+                  "reason": "The email states that the attached PDF includes the full technical specifications and phased milestone plan."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Post-launch includes 6 months of complimentary technical support",
+                  "present": true,
+                  "reason": "It says the proposal includes 6 months of complimentary technical support following launch."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "Request for a formal review meeting within the next 10 business days",
+                  "present": true,
+                  "reason": "The email requests a formal meeting within the next 10 business days at the recipient's convenience."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Formal, professional, and moderately confident with a polite sales/proposal style",
+              "positive_examples": "\"On behalf of Apex Dev Solutions, I am pleased to submit our formal business proposal\"; \"Our proposal outlines a project valued at £85,000\"; \"We would welcome the opportunity to review the proposal with you in a formal meeting within the next 10 business days\"",
+              "negative_examples": "\"I hope you are well.\" is slightly warmer and less assertively formal than the rest of the email"
+            },
+            "structure_quality": {
+              "score": 0.78,
+              "rule_score": 0.75,
+              "llm_score": 0.8,
+              "rule_checks": {
+                "has_subject_line": false,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 8,
+              "structure_observations": "The email is well-structured with a clear subject line, appropriate greeting, concise multi-paragraph body, and professional closing. It includes a specific value proposition and next-step call to action; minor improvement could be adding a more direct reference to the attached proposal's purpose or expected decision-making next step."
+            },
+            "composite_score": 0.8933,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email captures nearly all key details from the reference, including the project, price, timeline, support offer, and request for a formal review meeting. It is slightly more polished and generic in places, but maintains a very similar formal business tone and professional clarity."
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "name": "Team Wellness Programme Announcement",
+        "intent": "Announce a new employee wellness programme to the entire team",
+        "tone": "Enthusiastic, inclusive, and warm",
+        "key_facts": [
+          "Programme is called 'Thrive@Work', launching on the 1st of next month",
+          "Includes mental health support, weekly yoga sessions, and nutrition workshops",
+          "All sessions are voluntary and held during lunch hours",
+          "Partnered with WellnessFirst, a certified wellbeing provider",
+          "Staff can register via the internal HR portal by end of this week"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Introducing Thrive@Work — Our New Employee Wellness Programme Launches Next Month\n\nDear Team,\n\nI’m delighted to share that we will be launching a new employee wellness programme called **Thrive@Work** on the **1st of next month**.\n\nDesigned to support your wellbeing in practical, meaningful ways, Thrive@Work will offer **mental health support, weekly yoga sessions, and nutrition workshops**. We’ve partnered with **WellnessFirst, a certified wellbeing provider**, to help ensure the programme delivers high-quality support and guidance for everyone across the team.\n\nAll sessions are **voluntary** and will be held **during lunch hours**, so you can choose the activities that best suit your needs and schedule. Our hope is to create a programme that feels accessible, flexible, and genuinely useful for as many people as possible.\n\nIf you’d like to take part, please register through the **internal HR portal by the end of this week**. We encourage you to sign up early so you can secure your place and start planning for the sessions that interest you most.\n\nWe’re excited to bring this initiative to life and hopeful it will provide valuable support and encouragement for the team. Thank you, as always, for everything you do.\n\nWarm regards,  \n[Your Name]  \n[Your Title]",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 4.14,
+          "input_tokens": 1057,
+          "output_tokens": 263,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 5,
+              "facts_present": 5,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Programme is called 'Thrive@Work', launching on the 1st of next month",
+                  "present": true,
+                  "reason": "The email explicitly names the programme Thrive@Work and says it will launch on the 1st of next month."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Includes mental health support, weekly yoga sessions, and nutrition workshops",
+                  "present": true,
+                  "reason": "These three programme components are all directly listed in the email."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "All sessions are voluntary and held during lunch hours",
+                  "present": true,
+                  "reason": "The email states that all sessions are voluntary and will be held during lunch hours."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Partnered with WellnessFirst, a certified wellbeing provider",
+                  "present": true,
+                  "reason": "The email mentions a partnership with WellnessFirst and describes it as a certified wellbeing provider."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Staff can register via the internal HR portal by end of this week",
+                  "present": true,
+                  "reason": "The email instructs staff to register through the internal HR portal by the end of this week."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.7,
+              "raw_score": 7,
+              "observed_tone": "Professional, positive, and reassuring with some warmth and mild enthusiasm; somewhat formal and informational rather than strongly inclusive",
+              "positive_examples": "\"I’m delighted to share\"; \"We’re excited to bring this initiative to life\"; \"Our hope is to create a programme that feels accessible, flexible, and genuinely useful for as many people as possible\"; \"Thank you, as always, for everything you do\"",
+              "negative_examples": "The email is fairly formal and corporate overall, with phrases like \"We’ve partnered with WellnessFirst, a certified wellbeing provider\" and \"Please register through the internal HR portal by the end of this week\" that make it feel more administrative than warmly inclusive"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well structured with all key components present: a clear subject line, appropriate greeting, logically ordered body paragraphs, a concrete call-to-action, and a professional sign-off. The formatting is polished and easy to scan, with only a minor opportunity to improve by adding a bit more detail on what to expect next or who to contact with questions."
+            },
+            "composite_score": 0.88,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 8,
+              "quality_score": 9,
+              "comparison_notes": "The generated email covers nearly all key details from the reference, including the launch timing, partnership with WellnessFirst, programme activities, voluntary nature, and registration deadline. It is slightly more formal and polished than the reference, with less warmth and enthusiasm, but overall it is a strong stand-in."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "Subject: Introducing Thrive@Work: Our New Employee Wellness Programme\n\nDear Team,\n\nWe’re excited to announce the launch of our new employee wellness programme, **Thrive@Work**, starting on the **1st of next month**.\n\nThrive@Work has been designed to support your wellbeing in meaningful and practical ways. The programme will include:\n\n- **Mental health support**\n- **Weekly yoga sessions**\n- **Nutrition workshops**\n\nAll sessions are **voluntary** and will be held during **lunch hours** to make them easy to fit into your day.\n\nWe’re also pleased to be partnering with **WellnessFirst**, a certified wellbeing provider, to bring this programme to life and ensure we’re offering high-quality support and resources for everyone.\n\nIf you’d like to take part, please register via the **internal HR portal** by the **end of this week**.\n\nWe hope you’ll find Thrive@Work a valuable addition to our workplace and an opportunity to focus on your wellbeing alongside your day-to-day work. We’re looking forward to launching the programme and seeing many of you get involved.\n\nWarm regards,  \n[Your Name]  \n[Your Job Title]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 6.01,
+          "input_tokens": 123,
+          "output_tokens": 238,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 5,
+              "facts_present": 5,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Programme is called 'Thrive@Work', launching on the 1st of next month",
+                  "present": true,
+                  "reason": "The email names the programme Thrive@Work and states it starts on the 1st of next month."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Includes mental health support, weekly yoga sessions, and nutrition workshops",
+                  "present": true,
+                  "reason": "All three programme components are explicitly listed in the email."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "All sessions are voluntary and held during lunch hours",
+                  "present": true,
+                  "reason": "The email says all sessions are voluntary and will be held during lunch hours."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Partnered with WellnessFirst, a certified wellbeing provider",
+                  "present": true,
+                  "reason": "The email states it is partnering with WellnessFirst and describes it as a certified wellbeing provider."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Staff can register via the internal HR portal by end of this week",
+                  "present": true,
+                  "reason": "The email instructs staff to register via the internal HR portal by the end of this week."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.8,
+              "raw_score": 8,
+              "observed_tone": "Professional, upbeat, and mildly warm, with a polished internal-announcement style",
+              "positive_examples": "“We’re excited to announce”, “designed to support your wellbeing in meaningful and practical ways”, “we’re also pleased to be partnering”, “We hope you’ll find Thrive@Work a valuable addition”, “We’re looking forward to launching the programme and seeing many of you get involved”",
+              "negative_examples": "The email is somewhat formal and corporate in phrasing, and it lacks more explicitly inclusive language such as direct invitations or community-focused wording; “Warm regards” is polite but standard rather than especially warm"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well structured with a strong subject line, appropriate greeting, logically separated paragraphs, and a clear call to action. It also ends with a professional closing and sender placeholder, making it complete and polished."
+            },
+            "composite_score": 0.9133,
+            "reference_alignment": {
+              "score": 0.88,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 8,
+              "quality_score": 9,
+              "comparison_notes": "The generated email includes essentially all key details from the reference: the launch announcement, start date, programme elements, WellnessFirst partnership, voluntary participation, and HR portal signup deadline. It is slightly more formal and structured than the reference and omits some of the warmer, more enthusiastic phrasing and closing energy, but overall it is a strong match."
+            }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "name": "Recommendation Letter Request",
+        "intent": "Request a professional letter of recommendation from a former supervisor",
+        "tone": "Respectful, formal, and genuinely grateful",
+        "key_facts": [
+          "Requesting a recommendation from Dr. Helen Marsh, former PhD supervisor",
+          "Application is for the MSc in Artificial Intelligence at TU Berlin",
+          "Application deadline is 15 August",
+          "Will attach a copy of the personal statement and CV for reference",
+          "Open to discussing specific experiences Dr. Marsh could highlight",
+          "Extremely grateful for any support she can provide"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Request for a Letter of Recommendation for MSc in Artificial Intelligence, TU Berlin\n\nDear Dr. Marsh,\n\nI hope you are doing well. I am writing to respectfully ask whether you would be willing to provide me with a letter of recommendation for my application to the MSc in Artificial Intelligence at TU Berlin.\n\nAs my former PhD supervisor, your perspective on my work and academic development would mean a great deal to me. The application deadline is 15 August, so I wanted to reach out well in advance in case you are able to support my application.\n\nFor your reference, I will attach a copy of my personal statement and CV so you can see the direction of my application and the experience I plan to emphasise. If helpful, I would also be very open to discussing any specific experiences or qualities from our time working together that you feel would be most appropriate to highlight.\n\nI would be extremely grateful for any support you can provide, and I sincerely appreciate your consideration of this request.\n\nKind regards,  \n[Your Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 4.19,
+          "input_tokens": 1057,
+          "output_tokens": 208,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 6,
+              "facts_present": 6,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Requesting a recommendation from Dr. Helen Marsh, former PhD supervisor",
+                  "present": true,
+                  "reason": "The email asks Dr. Marsh, described as the sender's former PhD supervisor, for a letter of recommendation."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Application is for the MSc in Artificial Intelligence at TU Berlin",
+                  "present": true,
+                  "reason": "The subject line and opening paragraph explicitly state the MSc in Artificial Intelligence at TU Berlin."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Application deadline is 15 August",
+                  "present": true,
+                  "reason": "The email says the application deadline is 15 August."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Will attach a copy of the personal statement and CV for reference",
+                  "present": true,
+                  "reason": "It states that a copy of the personal statement and CV will be attached for reference."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Open to discussing specific experiences Dr. Marsh could highlight",
+                  "present": true,
+                  "reason": "The email says the sender would be open to discussing specific experiences or qualities to highlight."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "Extremely grateful for any support she can provide",
+                  "present": true,
+                  "reason": "It states, 'I would be extremely grateful for any support you can provide.'"
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Respectful, professional, and formal with a sincere appreciative tone throughout",
+              "positive_examples": "\"I am writing to respectfully ask whether you would be willing to provide me with a letter of recommendation\"; \"your perspective on my work and academic development would mean a great deal to me\"; \"I would be extremely grateful for any support you can provide, and I sincerely appreciate your consideration of this request\"",
+              "negative_examples": "Minor issue: \"I hope you are doing well\" is slightly more neutral than formally grateful, but it does not meaningfully detract from the tone"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well organized with a strong subject line, appropriate greeting, clear multi-paragraph body, and a professional closing. It includes a direct call-to-action and relevant supporting context, with only very minor room for polishing in concision."
+            },
+            "composite_score": 0.9467,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email captures the same core request, context, deadline, and offer to attach supporting materials and discuss the recommendation. It is slightly more concise and less warm/expressive than the reference, but it remains highly professional and very close in tone and intent."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "Subject: Request for Letter of Recommendation for MSc in Artificial Intelligence Application\n\nDear Dr. Marsh,\n\nI hope you are doing well. I am writing to kindly ask whether you would be willing to provide me with a letter of recommendation for my application to the MSc in Artificial Intelligence at TU Berlin.\n\nAs the application deadline is 15 August, I wanted to reach out in advance and give you plenty of time to consider my request. I will attach a copy of my personal statement and CV for your reference, as these may be helpful in preparing the recommendation.\n\nIf you are open to it, I would also be very happy to discuss any particular experiences, projects, or aspects of my work under your supervision that you feel would be most relevant to highlight.\n\nI am extremely grateful for any support you may be able to provide, and I sincerely appreciate your time and consideration.\n\nKind regards,  \n[Your Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 3.69,
+          "input_tokens": 122,
+          "output_tokens": 183,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8333,
+              "total_facts": 6,
+              "facts_present": 5,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Requesting a recommendation from Dr. Helen Marsh, former PhD supervisor",
+                  "present": false,
+                  "reason": "The email asks Dr. Marsh for a recommendation, but it does not specify that her full name is Helen or that she was the former PhD supervisor."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Application is for the MSc in Artificial Intelligence at TU Berlin",
+                  "present": true,
+                  "reason": "The email explicitly states that the recommendation is for an application to the MSc in Artificial Intelligence at TU Berlin."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Application deadline is 15 August",
+                  "present": true,
+                  "reason": "The email clearly says the application deadline is 15 August."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Will attach a copy of the personal statement and CV for reference",
+                  "present": true,
+                  "reason": "The email says it will attach a copy of the personal statement and CV for reference."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "Open to discussing specific experiences Dr. Marsh could highlight",
+                  "present": true,
+                  "reason": "The email states that it would be happy to discuss particular experiences, projects, or aspects of work that could be highlighted."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "Extremely grateful for any support she can provide",
+                  "present": true,
+                  "reason": "The email says it is extremely grateful for any support she may be able to provide."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Respectful, formal, and appreciative with a polite, professional academic request tone",
+              "positive_examples": "\"Dear Dr. Marsh,\"; \"I am writing to kindly ask whether you would be willing\"; \"I wanted to reach out in advance and give you plenty of time\"; \"I would also be very happy to discuss\"; \"I am extremely grateful for any support you may be able to provide, and I sincerely appreciate your time and consideration.\"; \"Kind regards\"",
+              "negative_examples": "\"I hope you are doing well.\" is standard and slightly generic, but not misaligned; overall none"
+            },
+            "structure_quality": {
+              "score": 0.88,
+              "rule_score": 1.0,
+              "llm_score": 0.8,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 8,
+              "structure_observations": "The email has a strong professional structure with a clear subject line, appropriate greeting, organized body paragraphs, and a courteous closing. It includes the key elements needed for a recommendation request, with only minor wording awkwardness preventing it from being excellent."
+            },
+            "composite_score": 0.8711,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email captures the same core request, deadline, supporting documents, and polite offer to discuss details, with similarly professional wording. It is slightly less warm and specific than the reference, omitting the explicit mention of prior PhD supervision and the deeper expression of gratitude."
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "name": "Overdue Invoice Payment Reminder",
+        "intent": "Send a firm reminder for an overdue invoice payment",
+        "tone": "Professional, firm, and polite",
+        "key_facts": [
+          "Invoice number INV-2024-447 for £12,400",
+          "Payment was due on 30 April — now 21 days overdue",
+          "Client is Meridian Consulting Group",
+          "Payment can be made via bank transfer using the details on the original invoice",
+          "If payment is not received within 7 days, late payment charges may apply per contract terms",
+          "Contact is accounts@yourdomain.com for any queries"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Overdue Invoice Reminder — INV-2024-447\n\nDear Meridian Consulting Group,\n\nI hope you are well. I am writing to follow up regarding invoice INV-2024-447 for £12,400, which was due for payment on 30 April and is now 21 days overdue.\n\nTo avoid any further delay, payment can be made via bank transfer using the details provided on the original invoice. We would appreciate it if this could be arranged within the next 7 days.\n\nPlease note that if payment is not received within that time, late payment charges may apply in accordance with our contract terms.\n\nIf you have any questions or believe this reminder has been sent in error, please contact us at accounts@yourdomain.com.\n\nKind regards,  \n[Your Name]  \n[Your Position]  \n[Your Company]",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 3.8,
+          "input_tokens": 1066,
+          "output_tokens": 170,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 6,
+              "facts_present": 6,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Invoice number INV-2024-447 for £12,400",
+                  "present": true,
+                  "reason": "The email explicitly mentions invoice INV-2024-447 and the amount of £12,400."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Payment was due on 30 April — now 21 days overdue",
+                  "present": true,
+                  "reason": "It states the invoice was due on 30 April and is now 21 days overdue."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Client is Meridian Consulting Group",
+                  "present": true,
+                  "reason": "The email is addressed to Meridian Consulting Group."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Payment can be made via bank transfer using the details on the original invoice",
+                  "present": true,
+                  "reason": "It says payment can be made via bank transfer using the details provided on the original invoice."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "If payment is not received within 7 days, late payment charges may apply per contract terms",
+                  "present": true,
+                  "reason": "The email requests payment within 7 days and warns that late payment charges may apply in accordance with contract terms."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "Contact is accounts@yourdomain.com for any queries",
+                  "present": true,
+                  "reason": "It provides accounts@yourdomain.com as the contact for questions or if the reminder was sent in error."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Professional and courteous with a clear, assertive payment reminder; firm in its deadline and consequences, while remaining respectful throughout.",
+              "positive_examples": "“I hope you are well.”; “We would appreciate it if this could be arranged within the next 7 days.”; “Please note that if payment is not received within that time, late payment charges may apply in accordance with our contract terms.”; “If you have any questions or believe this reminder has been sent in error, please contact us...”",
+              "negative_examples": "none"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well structured with a clear subject line, appropriate greeting, concise multi-paragraph body, explicit payment deadline, and professional sign-off. It is complete and polished, with only a minor opportunity to improve by adding a more formal closing phrase or a direct payment link/reference if applicable."
+            },
+            "composite_score": 0.9467,
+            "reference_alignment": {
+              "score": 0.88,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 8,
+              "quality_score": 9,
+              "comparison_notes": "The generated email includes the key facts, deadline, escalation warning, and contact details, so it closely matches the reference’s intent. It is slightly less specific and less formal than the reference, omitting the invoice-status phrasing and the stronger accounts-receivable closing, but overall it is a strong business email."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "Subject: Overdue Invoice INV-2024-447 – Payment Reminder\n\nDear Meridian Consulting Group,\n\nI hope you are well. I am writing to follow up on invoice **INV-2024-447** for **£12,400**, which was due for payment on **30 April** and is now **21 days overdue**.\n\nPlease arrange payment as soon as possible via **bank transfer** using the details provided on the original invoice. If you have already processed this payment, please disregard this reminder.\n\nIf payment is not received within **7 days**, late payment charges may apply in accordance with the contract terms.\n\nShould you have any questions or require a copy of the invoice, please contact us at **accounts@yourdomain.com**.\n\nThank you for your prompt attention to this matter.\n\nKind regards,  \n[Your Name]  \n[Your Job Title]  \n[Your Company Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 3.4,
+          "input_tokens": 131,
+          "output_tokens": 182,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 1.0,
+              "total_facts": 6,
+              "facts_present": 6,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "Invoice number INV-2024-447 for £12,400",
+                  "present": true,
+                  "reason": "The email explicitly mentions invoice INV-2024-447 and the amount £12,400."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Payment was due on 30 April — now 21 days overdue",
+                  "present": true,
+                  "reason": "It states the invoice was due on 30 April and is now 21 days overdue."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Client is Meridian Consulting Group",
+                  "present": true,
+                  "reason": "The salutation directly addresses Meridian Consulting Group."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Payment can be made via bank transfer using the details on the original invoice",
+                  "present": true,
+                  "reason": "The email says payment should be made via bank transfer using the details provided on the original invoice."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "If payment is not received within 7 days, late payment charges may apply per contract terms",
+                  "present": true,
+                  "reason": "It states that if payment is not received within 7 days, late payment charges may apply in accordance with the contract terms."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "Contact is accounts@yourdomain.com for any queries",
+                  "present": true,
+                  "reason": "The email provides accounts@yourdomain.com as the contact for questions or a copy of the invoice."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Professional, courteous, and assertive, with a clear payment reminder and mild urgency",
+              "positive_examples": "\"I hope you are well.\"; \"Please arrange payment as soon as possible\"; \"If you have already processed this payment, please disregard this reminder.\"; \"Should you have any questions or require a copy of the invoice\"; \"Thank you for your prompt attention to this matter.\"",
+              "negative_examples": "none"
+            },
+            "structure_quality": {
+              "score": 0.94,
+              "rule_score": 1.0,
+              "llm_score": 0.9,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 9,
+              "structure_observations": "The email is well-organized with a strong subject line, appropriate greeting, clear body paragraphs, a direct call-to-action, and a professional sign-off. It is complete and polished, with only minor room for customization depending on tone or relationship with the recipient."
+            },
+            "composite_score": 0.9467,
+            "reference_alignment": {
+              "score": 0.88,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 8,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves the key business content: invoice number, amount, due date, days overdue, payment request, late-fee warning, and contact details. It is slightly less formal and less specific than the reference (missing the named recipient, explicit notice that the invoice is outstanding today, and the more formal closing), but overall it is very close in meaning and professional quality."
+            }
+          }
+        }
+      },
+      {
+        "id": 10,
+        "name": "New Client Welcome & Onboarding",
+        "intent": "Welcome a new client and provide onboarding details",
+        "tone": "Warm, welcoming, and professional",
+        "key_facts": [
+          "New client is Luminary Digital, primary contact is Sophie Hartmann",
+          "Dedicated account manager is Raj Patel",
+          "Welcome onboarding call is booked for Monday at 10 AM",
+          "Platform login credentials have been sent to Sophie's registered email",
+          "A quick-start guide is attached to this email",
+          "Support is available 24/7 via the live chat on the platform"
+        ],
+        "strategy_a": {
+          "email_text": "Subject: Welcome to Luminary Digital — Onboarding Details for Monday at 10 AM\n\nDear Sophie,\n\nA warm welcome to Luminary Digital — we’re delighted to have you with us and excited to begin working together.\n\nRaj Patel will be your dedicated account manager and your main point of contact moving forward. He will be joining your welcome onboarding call, which is booked for Monday at 10:00 AM, and will be available to walk you through the platform and answer any questions you may have as you get started.\n\nYour platform login credentials have already been sent to your registered email address, and I’ve also attached a quick-start guide to this message for easy reference. We hope it helps make your first steps on the platform as smooth as possible.\n\nIf anything comes up in the meantime, our support team is available 24/7 through the live chat on the platform, so help is always close at hand.\n\nWe’re looking forward to supporting Luminary Digital and are excited to get underway.\n\nWarm regards,  \n[Your Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "A",
+          "latency_seconds": 3.68,
+          "input_tokens": 1056,
+          "output_tokens": 210,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.8333,
+              "total_facts": 6,
+              "facts_present": 5,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "New client is Luminary Digital, primary contact is Sophie Hartmann",
+                  "present": false,
+                  "reason": "The email names Luminary Digital and addresses Sophie, but it does not include Sophie's full name Hartmann."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Dedicated account manager is Raj Patel",
+                  "present": true,
+                  "reason": "It explicitly states that Raj Patel will be the dedicated account manager and main point of contact."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Welcome onboarding call is booked for Monday at 10 AM",
+                  "present": true,
+                  "reason": "The email says the welcome onboarding call is booked for Monday at 10:00 AM."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Platform login credentials have been sent to Sophie's registered email",
+                  "present": true,
+                  "reason": "It says the platform login credentials have already been sent to the registered email address."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "A quick-start guide is attached to this email",
+                  "present": true,
+                  "reason": "The email explicitly mentions that a quick-start guide is attached."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "Support is available 24/7 via the live chat on the platform",
+                  "present": true,
+                  "reason": "It states that support is available 24/7 through the live chat on the platform."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Warm, courteous, and polished with a slightly formal corporate feel",
+              "positive_examples": "“A warm welcome to Luminary Digital — we’re delighted to have you with us”; “excited to begin working together”; “available to walk you through the platform and answer any questions you may have”; “We hope it helps make your first steps on the platform as smooth as possible”; “We’re looking forward to supporting Luminary Digital”",
+              "negative_examples": "none"
+            },
+            "structure_quality": {
+              "score": 0.88,
+              "rule_score": 1.0,
+              "llm_score": 0.8,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 8,
+              "structure_observations": "The email is well-organized with a clear subject line, appropriate greeting, multiple concise body paragraphs, and a professional closing. It covers the key onboarding details and support information effectively, with only minor room for improvement in brevity and a more explicit next-step call to action."
+            },
+            "composite_score": 0.8711,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 9,
+              "quality_score": 9,
+              "comparison_notes": "The generated email preserves nearly all key information from the reference, including the welcome, account manager, onboarding call time, login credentials, attached quick-start guide, and 24/7 live chat support. It is slightly more polished and concise, with only minor differences in phrasing and a somewhat less warmly congratulatory tone than the reference."
+            }
+          }
+        },
+        "strategy_b": {
+          "email_text": "Subject: Welcome to Luminary Digital — Onboarding Details\n\nDear Sophie,\n\nWelcome to the platform, and thank you for choosing us. We’re excited to begin working with Luminary Digital and look forward to supporting you throughout the onboarding process.\n\nI’m pleased to introduce Raj Patel, your dedicated account manager, who will be your main point of contact moving forward. He will be available to help answer any questions and ensure everything is set up smoothly.\n\nAs a reminder, your welcome onboarding call is scheduled for Monday at 10:00 AM. We look forward to speaking with you then and walking through the next steps together.\n\nYour platform login credentials have been sent to your registered email address. I’ve also attached a quick-start guide to this email to help you get familiar with the platform.\n\nIf you need assistance at any time, our support team is available 24/7 through the live chat feature on the platform.\n\nWe’re delighted to have Luminary Digital on board and look forward to a successful partnership.\n\nWarm regards,  \n[Your Name]  \n[Your Title]  \n[Your Company Name]",
+          "model": "gpt-5.4-mini",
+          "strategy": "B",
+          "latency_seconds": 3.79,
+          "input_tokens": 121,
+          "output_tokens": 223,
+          "error": null,
+          "evaluation": {
+            "fact_recall": {
+              "score": 0.6667,
+              "total_facts": 6,
+              "facts_present": 4,
+              "detail": [
+                {
+                  "fact_index": 0,
+                  "fact": "New client is Luminary Digital, primary contact is Sophie Hartmann",
+                  "present": false,
+                  "reason": "The email mentions Luminary Digital and addresses Sophie, but it does not include Sophie Hartmann’s full name."
+                },
+                {
+                  "fact_index": 1,
+                  "fact": "Dedicated account manager is Raj Patel",
+                  "present": true,
+                  "reason": "The email explicitly says Raj Patel is the dedicated account manager."
+                },
+                {
+                  "fact_index": 2,
+                  "fact": "Welcome onboarding call is booked for Monday at 10 AM",
+                  "present": true,
+                  "reason": "The email states that the welcome onboarding call is scheduled for Monday at 10:00 AM."
+                },
+                {
+                  "fact_index": 3,
+                  "fact": "Platform login credentials have been sent to Sophie's registered email",
+                  "present": false,
+                  "reason": "The email says the credentials were sent to the registered email address, but it does not specify that it is Sophie's email."
+                },
+                {
+                  "fact_index": 4,
+                  "fact": "A quick-start guide is attached to this email",
+                  "present": true,
+                  "reason": "The email directly says a quick-start guide is attached."
+                },
+                {
+                  "fact_index": 5,
+                  "fact": "Support is available 24/7 via the live chat on the platform",
+                  "present": true,
+                  "reason": "The email states that support is available 24/7 through the live chat feature on the platform."
+                }
+              ]
+            },
+            "tone_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "observed_tone": "Warm, courteous, and professional with a slightly formal corporate onboarding style",
+              "positive_examples": "“Welcome to the platform, and thank you for choosing us,” “We’re excited to begin working with Luminary Digital,” “I’m pleased to introduce Raj Patel,” and “We’re delighted to have Luminary Digital on board” all feel welcoming, friendly, and polished.",
+              "negative_examples": "none"
+            },
+            "structure_quality": {
+              "score": 0.88,
+              "rule_score": 1.0,
+              "llm_score": 0.8,
+              "rule_checks": {
+                "has_subject_line": true,
+                "has_greeting": true,
+                "has_professional_closing": true,
+                "has_multi_paragraph": true
+              },
+              "llm_raw_score": 8,
+              "structure_observations": "The email is well-organized with a clear subject line, appropriate greeting, logically separated body paragraphs, and a professional closing. It includes the key onboarding details and next steps, with only minor room for improvement in adding a slightly more explicit call-to-action or confirmation request."
+            },
+            "composite_score": 0.8156,
+            "reference_alignment": {
+              "score": 0.9,
+              "raw_score": 9,
+              "coverage_score": 9,
+              "tone_match_score": 8,
+              "quality_score": 9,
+              "comparison_notes": "The generated email includes essentially all of the reference’s key onboarding details: welcome message, account manager introduction, call time, login credentials, quick-start guide, and support availability. The tone is slightly more generic and less warmly celebratory than the reference, but the writing is clear, professional, and highly suitable as a business email."
+            }
+          }
+        }
+      }
+    ]
+  }
+}
